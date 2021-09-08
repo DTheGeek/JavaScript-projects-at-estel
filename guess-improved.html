@@ -1,0 +1,220 @@
+<html>
+<head>
+   <style>
+   * {
+      font: 18px helvetica;
+   }
+   #gamecontainer {
+      padding-top: 30px;
+      margin: 20px auto;
+      width: 70%;
+      height: 50%;
+      text-align: center;
+      background-color: #ddd;
+      background-image: url("https://doofall.ddns.net/smb.jpg");
+      position: relative;
+   }
+   
+   #gamefield {
+      display: none;
+   }
+   
+   #startfield {
+      height: 100%;
+      margin-top: 10%;
+      display: flex;
+      flex-flow: column nowrap;
+      margin: 0% 35% 0% 35%;
+   }
+   
+   #result {
+      background: #eee;
+      max-height: 50%;
+      width: 0%;
+      opacity: 0.9;
+      overflow: hidden;
+      position: absolute;
+      left: 0px;
+      box-shadow: 0px 0px 2px #ccc;
+      border-radius: 0px 11px 11px 0px;
+      transition: width 0.5s ease;
+   }
+   
+   input[type='tel'] {
+      width: 50px;
+      height: 50px;
+      font-size: 22px;
+      text-align: center;
+      border-top: 2px;
+      border-left: 0px;
+      border-right: 0px;
+      border-width: 3px;
+      border-color: #f60;
+   }
+   
+   .btn {
+      font-size: 20px;
+      height: 50px;
+      max-width: 160px;
+      margin: 25px 15px;
+      outline: none;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0px 8px #f80;
+      background: #fa0;
+      color: #fff;
+      border: none;
+      border-radius: 15px;
+   }   
+   
+    .btn:active {
+      box-shadow: 0px 6px #f90;
+      transform: translateY(6px);
+   }
+   
+   .info-box {
+      max-width: 25%;
+      display: none;
+      z-index: 3;
+      background: #fff;
+      position: absolute;
+      top: 10%;
+      left: 35%;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0px 1px 9px #ccc;
+   }
+   </style>
+</head>
+<body>
+<div id='gamecontainer'>
+<span style='font: bold 26px arial;color: #7ac'>
+Guess Game
+</span>
+<br/>
+<p style='font-size:x-small;'>
+Made by doodoo
+</p>
+<div id='result'>
+</div>
+
+<form name='gamein' id='gamefield'>
+<input id='num' name='val' type='tel'>
+<button id='go' class='btn'>
+Tester
+</button>
+
+</form>
+
+<div id='startfield'>
+<button id='s-btn' class='btn'>
+Commencer
+</button>
+
+<button class='btn' id='o-btn'>
+Comment jouer?
+</button>
+
+<div id='tuto' class='info-box'>
+Pour jouer, cliques sur le button "start" et ensuite essaies de deviner le nombre généré par le jeu!
+<br/>
+<span id='c-btn' style='color:#7ac' onclick="this.parentNode.style.display='none'">
+Fermer
+</span>
+</div>
+<div id='bscore' class='info-box'>
+<!--le meilleur score ici-->
+<span id='c-btn' style='color:#7ac' onclick="this.parentNode.style.display='none'">
+Fermer
+</span>
+</div>
+</div>
+</div>
+
+<script>
+var mydata = {
+gcontainer : document.getElementById('gamecontainer'),
+gfield : document.getElementById('gamefield'),
+sfield : document.getElementById('startfield'),
+gofield : document.forms.gamein,
+btn : document.getElementById('s-btn'),
+gbtn : document.getElementById('go'),
+obtn : document.getElementById('o-btn'),
+res : document.getElementById('result'),
+tuto : document.getElementById('tuto'),
+trial : "",
+rand : 0,
+val : this.gamein.num,
+scoreholder : document.getElementById('bscore'),
+scoresave : document.createElement('button'),
+bestscore : 0
+};
+
+mydata.obtn.onclick = function () {
+   mydata.tuto.style.display = 'block';
+}
+
+mydata.scoresave.onclick = function () {
+ mydata.scoreholder.style.display = 'block';
+}
+
+mydata.btn.onclick = function () {
+  mydata.rand = Math.floor(Math.random()*10)+1
+   mydata.gfield.style.display = 'block';
+   mydata.sfield.style.display = 'none';
+   mydata.val.value = "";
+   mydata.res.innerHTML = "";
+   mydata.trial = " ";
+   myscore = 0;
+   }
+
+   var myscore = 0;
+   var count = 3;
+   var uscore;
+   mydata.gofield.onsubmit = function (event) {
+   event.preventDefault();
+   //alert(mydata.rand);
+   mydata.trial = mydata.trial + mydata.val.value + ' ';
+   mydata.res.style.width = '75%';
+   mydata.res.style.padding = '10px';
+   uscore = "Votre score: "+myscore+"<br/>Vos tentatives :"+mydata.trial+'<br/><span style="color:#7ac" onclick="'+"document.getElementById('result').style.width='0%';document.getElementById('result').style.padding='0px'"+'">OK</span>';
+   count = count - 1;
+   if (myscore > mydata.bestscore) {
+       mydata.bestscore = myscore;
+      mydata.scoreholder.innerHTML += '<br/>Votre meilleur score: '+mydata.bestscore;
+   }
+   
+   if (Number(mydata.val.value) !== mydata.rand) {
+       myscore = myscore - 1;
+       if (myscore < 0) {
+           myscore = 0;
+      }
+   mydata.res.style.color = '#e11';
+   mydata.res.innerHTML = "Perdu! Ce n'est pas le bon nombre<br/><p style='color:#555;font-weight:bold'>"+uscore+'</p>';
+   }
+    else if (Number(mydata.val.value) === mydata.rand) {
+   myscore = myscore + 3;
+   mydata.res.style.color = "#1e1";
+   mydata.res.innerHTML = "Bingo! Tu as deviné le bon nombre<br/><p style='color:#555;font-weight:bold'>"+uscore+'</p>';
+   ;
+     mydata.rand = Math.floor(Math.random()*10)+1
+   }
+   if (count == 0) {
+       mydata.res.innerHTML += "<p style='color:#777'>Le nombre mystère est " + mydata.rand + "</p>";
+       }
+   if (count < 1) {
+count = 3;
+mydata.sfield.style.display = 'block';
+mydata.gfield.style.display = 'none';
+mydata.scoresave.className = "btn";
+//mydata.bestscore = myscore;
+mydata.scoresave.style.background = 'skyblue';
+mydata.scoresave.style.boxShadow = "0px 8px #8ac";
+mydata.scoresave.innerHTML = "Voir meilleur score";
+mydata.sfield.appendChild(mydata.scoresave);
+mydata.btn.innerHTML = 'Recommencer?';
+       }
+   }
+</script>
+</body>
+</html>
